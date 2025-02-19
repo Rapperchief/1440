@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Control Your Minutes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #2C3E50;
+            color: white;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #timer-container {
+            width: 90%;
+            max-width: 400px;
+        }
+        #countdown {
+            font-size: 3rem;
+            margin-top: 20px;
+        }
+        #start-btn {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            background-color: #f39c12;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+        .circle {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            border: 10px solid #f39c12;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            margin: auto;
+            transition: all linear;
+        }
+        @media (max-width: 600px) {
+            .circle {
+                width: 200px;
+                height: 200px;
+                font-size: 1.5rem;
+            }
+            #countdown {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="timer-container">
+        <h1>Control Your Minutes</h1>
+        <div class="circle" id="timer-circle">
+            <div id="countdown">00:00</div>
+        </div>
+        <button id="start-btn">Start Timer</button>
+    </div>
+    <audio id="tick-sound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+    <script>
+        let countdownInterval;function getMinutesUntilMidnight() {
+        const now = new Date();
+        const midnight = new Date();
+        midnight.setHours(24, 0, 0, 0);
+        return Math.floor((midnight - now) / 60000);
+    }
+
+    function startTimer() {
+        let remainingMinutes = getMinutesUntilMidnight();
+        updateDisplay(remainingMinutes * 60);
+        clearInterval(countdownInterval);
+
+        let circle = document.getElementById("timer-circle");
+        circle.style.transition = `all ${remainingMinutes * 60}s linear`;
+        circle.style.transform = "scale(0)";
+
+        countdownInterval = setInterval(() => {
+            remainingMinutes--;
+            updateDisplay(remainingMinutes * 60);
+            playTickSound();
+            if (remainingMinutes <= 0) clearInterval(countdownInterval);
+        }, 60000);
+    }
+
+    function updateDisplay(seconds) {
+        let mins = Math.floor(seconds / 60);
+        let secs = seconds % 60;
+        document.getElementById("countdown").innerText = `${mins}:${secs < 10 ? '0' + secs : secs}`;
+    }
+
+    function playTickSound() {
+        document.getElementById("tick-sound").play();
+    }
+
+    document.getElementById("start-btn").addEventListener("click", startTimer);
+</script>
+
+</body>
+</html>
