@@ -1,0 +1,9 @@
+{
+  "name": "Control Your Minutes",
+  "theme_color": "#3177c8",
+  "background_color": "hsv(263, 79%, 68%)",
+  "short_name": "Your Minutes",
+  "categories": [
+    "sports"
+  ]
+}
