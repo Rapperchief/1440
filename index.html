@@ -1,8 +1,14 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Control Your Minutes</title>
+    <meta name="theme-color" content="#2C3E50">
+    <meta name="description" content="A timer that counts down until midnight.">
+    
+    <link rel="manifest" href="manifest.json">
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -57,9 +63,9 @@
             }
         }
     </style>
-<link rel="manifest" href="manifest.json">
 </head>
 <body>
+
     <div id="timer-container">
         <h1>Control Your Minutes</h1>
         <div class="circle" id="timer-circle">
@@ -67,44 +73,56 @@
         </div>
         <button id="start-btn">Start Timer</button>
     </div>
+    
     <audio id="tick-sound" src="https://www.soundjay.com/button/beep-07.wav"></audio>
+
     <script>
-        let countdownInterval;function getMinutesUntilMidnight() {
-        const now = new Date();
-        const midnight = new Date();
-        midnight.setHours(24, 0, 0, 0);
-        return Math.floor((midnight - now) / 60000);
-    }
+        // Timer Logic
+        let countdownInterval;
+        
+        function getMinutesUntilMidnight() {
+            const now = new Date();
+            const midnight = new Date();
+            midnight.setHours(24, 0, 0, 0);
+            return Math.floor((midnight - now) / 60000);
+        }
 
-    function startTimer() {
-        let remainingMinutes = getMinutesUntilMidnight();
-        updateDisplay(remainingMinutes * 60);
-        clearInterval(countdownInterval);
-
-        let circle = document.getElementById("timer-circle");
-        circle.style.transition = `all ${remainingMinutes * 60}s linear`;
-        circle.style.transform = "scale(0)";
-
-        countdownInterval = setInterval(() => {
-            remainingMinutes--;
+        function startTimer() {
+            let remainingMinutes = getMinutesUntilMidnight();
             updateDisplay(remainingMinutes * 60);
-            playTickSound();
-            if (remainingMinutes <= 0) clearInterval(countdownInterval);
-        }, 60000);
-    }
+            clearInterval(countdownInterval);
 
-    function updateDisplay(seconds) {
-        let mins = Math.floor(seconds / 60);
-        let secs = seconds % 60;
-        document.getElementById("countdown").innerText = `${mins}:${secs < 10 ? '0' + secs : secs}`;
-    }
+            let circle = document.getElementById("timer-circle");
+            circle.style.transition = `all ${remainingMinutes * 60}s linear`;
+            circle.style.transform = "scale(0)";
 
-    function playTickSound() {
-        document.getElementById("tick-sound").play();
-    }
+            countdownInterval = setInterval(() => {
+                remainingMinutes--;
+                updateDisplay(remainingMinutes * 60);
+                playTickSound();
+                if (remainingMinutes <= 0) clearInterval(countdownInterval);
+            }, 60000);
+        }
 
-    document.getElementById("start-btn").addEventListener("click", startTimer);
-</script>
+        function updateDisplay(seconds) {
+            let mins = Math.floor(seconds / 60);
+            let secs = seconds % 60;
+            document.getElementById("countdown").innerText = `${mins}:${secs < 10 ? '0' + secs : secs}`;
+        }
+
+        function playTickSound() {
+            document.getElementById("tick-sound").play();
+        }
+
+        document.getElementById("start-btn").addEventListener("click", startTimer);
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker Registered', reg))
+                .catch(err => console.error('Service Worker Registration Failed', err));
+        }
+    </script>
 
 </body>
 </html>
